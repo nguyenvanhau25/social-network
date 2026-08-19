@@ -10,6 +10,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileRequest {
+    String userId;
+    String username;
+    String email;
     String firstName;
     String lastName;
     LocalDate dob;

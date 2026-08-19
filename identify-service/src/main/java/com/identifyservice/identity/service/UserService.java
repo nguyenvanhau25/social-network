@@ -3,6 +3,7 @@ package com.identifyservice.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
+import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,8 +42,9 @@ public class UserService {
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
-    KafkaTemplate<String, Object> kafkaTemplate;
+   // KafkaTemplate<String, Object> kafkaTemplate;
 
+    @Transactional
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -60,23 +62,27 @@ public class UserService {
         }
 
         var profileRequest = profileMapper.toProfileCreationRequest(request);
+        // lấy id user
         profileRequest.setUserId(user.getId());
-
+        // gửi dữ liệu tới profile
         var profile = profileClient.createProfile(profileRequest);
 
-        NotificationEvent notificationEvent = NotificationEvent.builder()
-                .channel("EMAIL")
-                .recipient(request.getEmail())
-                .subject("Welcome to Social Network")
-                .body("Hello, " + request.getUsername())
-                .build();
 
-        // Publish message to kafka
-        kafkaTemplate.send("notification-delivery", notificationEvent);
+//        NotificationEvent notificationEvent = NotificationEvent.builder()
+//                .channel("EMAIL")
+//                .recipient(request.getEmail())
+//                .subject("Welcome to Social Network")
+//                .body("Hello, " + request.getUsername())
+//                .build();
+//
+//        // Publish message to kafka
+//        kafkaTemplate.send("notification-delivery", notificationEvent);
 
         var userCreationReponse = userMapper.toUserResponse(user);
-        userCreationReponse.setId(profile.getResult().getId());
+        userCreationReponse.setId(profile.getId());
 
+        // ghi log dữ liệu
+        log.info(userCreationReponse.toString());
         return userCreationReponse;
     }
 

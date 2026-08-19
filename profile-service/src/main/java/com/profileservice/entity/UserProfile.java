@@ -25,7 +25,7 @@ public class UserProfile {
     // 1 user co nhieu profile , map tới identify
     @Property("userId")
     String userId;
-
+    String email;
     String firstName;
     String lastName;
     LocalDate dob;

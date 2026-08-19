@@ -5,6 +5,7 @@ import com.profileservice.dto.response.UserProfileResponse;
 import com.profileservice.entity.UserProfile;
 import com.profileservice.mapper.UserProfileMapper;
 import com.profileservice.repository.UserProfileRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,6 +20,7 @@ public class UserProfileService {
     UserProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
 
+    @Transactional
     public UserProfileResponse createProfile(UserProfileRequest userProfileRequest) {
         UserProfile userProfile = userProfileMapper.toUserProfile(userProfileRequest);
         userProfile = userProfileRepository.save(userProfile);
